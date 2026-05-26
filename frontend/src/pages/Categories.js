@@ -49,34 +49,34 @@ const Categories = () => {
 };
 
 const styles = {
-  page: { padding: '60px 24px', minHeight: '80vh' },
+  page: { padding: 'clamp(24px, 6vw, 60px) 12px', minHeight: '80vh' },
   container: { maxWidth: 1280, margin: '0 auto' },
-  title: { fontFamily: 'Syne, sans-serif', fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 800, color: '#f0ece6', marginBottom: 12 },
-  sub: { color: 'rgba(240,236,230,0.45)', fontSize: 16, marginBottom: 48 },
+  title: { fontFamily: 'Syne, sans-serif', fontSize: 'clamp(28px, 6vw, 52px)', fontWeight: 800, color: '#f0ece6', marginBottom: 'clamp(8px, 2vw, 12px)' },
+  sub: { color: 'rgba(240,236,230,0.45)', fontSize: 'clamp(13px, 2vw, 16px)', marginBottom: 'clamp(24px, 6vw, 48px)' },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-    gap: 20,
+    gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 30vw, 220px), 1fr))',
+    gap: 'clamp(12px, 3vw, 20px)',
   },
   card: {
     background: '#13131a',
     border: '1px solid',
-    borderRadius: 18,
-    padding: '32px 24px',
+    borderRadius: 'clamp(14px, 3vw, 18px)',
+    padding: 'clamp(16px, 4vw, 32px) clamp(12px, 3vw, 24px)',
     textDecoration: 'none', color: '#f0ece6',
     display: 'flex', flexDirection: 'column', alignItems: 'center',
-    textAlign: 'center', gap: 12,
+    textAlign: 'center', gap: 'clamp(8px, 2vw, 12px)',
     transition: 'all 0.2s',
     position: 'relative',
   },
   iconWrap: {
-    width: 72, height: 72, borderRadius: '50%',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    width: 'clamp(48px, 15vw, 72px)', height: 'clamp(48px, 15vw, 72px)', borderRadius: '50%',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
-  icon: { fontFamily: 'Syne, sans-serif', fontSize: 28, fontWeight: 800 },
-  name: { fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 18 },
-  desc: { color: 'rgba(240,236,230,0.45)', fontSize: 13, lineHeight: 1.6 },
-  arrow: { fontSize: 22, fontWeight: 700, marginTop: 8 },
+  icon: { fontFamily: 'Syne, sans-serif', fontSize: 'clamp(18px, 4vw, 28px)', fontWeight: 800 },
+  name: { fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 'clamp(14px, 3vw, 18px)' },
+  desc: { color: 'rgba(240,236,230,0.45)', fontSize: 'clamp(11px, 2vw, 13px)', lineHeight: 1.6 },
+  arrow: { fontSize: 'clamp(16px, 3vw, 22px)', fontWeight: 700, marginTop: 'clamp(4px, 1vw, 8px)' },
 };
 
 export default Categories;
