@@ -73,4 +73,4 @@ npm start
 
 ## 👨‍💻 Author
 
-**Satish Rana** — [@SatishRana8791](https://github.com/SatishRana8791)
+**Anand Shah** — [@Anandshah83](https://github.com/Anandshah83)
