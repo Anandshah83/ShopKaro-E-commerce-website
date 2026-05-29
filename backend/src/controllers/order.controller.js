@@ -30,6 +30,13 @@ const createOrder= async ( req , res ) =>{
             paymentMethod: paymentMethod || 'razorpay',
             paymentStatus: paymentStatus || 'pending',
             status: 'pending',
+            currentLocation: 'Warehouse',
+            trackingHistory: [{
+                event: 'Order Placed',
+                status: 'pending',
+                location: 'Warehouse',
+                description: 'Your order has been placed'
+            }],
             userId: req.user.id 
         });
 
@@ -89,18 +96,45 @@ const getOrderById= async ( req , res )=>{
 const updateOrderStatus= async ( req , res )=>{
     //code here
     try{
-        const data=await order.findByIdAndUpdate(req.params.id , req.body , { new:true } );
-        if(!data){
-            return res.status(404).json({
-                success:false,
-                message:"orders not found"
+        const { status, trackingNumber, currentLocation, estimatedDelivery, notes } = req.body;
+        
+        if (!status) {
+            return res.status(400).json({
+                success: false,
+                message: "Status is required"
             });
         }
+
+        const orderDoc = await order.findById(req.params.id);
+        if(!orderDoc){
+            return res.status(404).json({
+                success:false,
+                message:"Order not found"
+            });
+        }
+
+        // Add to tracking history
+        const trackingEvent = {
+            event: `Order ${status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ')}`,
+            status: status,
+            location: currentLocation || orderDoc.currentLocation,
+            description: notes || `Order status updated to ${status}`
+        };
+
+        orderDoc.status = status;
+        if (trackingNumber) orderDoc.trackingNumber = trackingNumber;
+        if (currentLocation) orderDoc.currentLocation = currentLocation;
+        if (estimatedDelivery) orderDoc.estimatedDelivery = estimatedDelivery;
+        if (notes) orderDoc.notes = notes;
+        
+        orderDoc.trackingHistory.push(trackingEvent);
+        
+        const data = await orderDoc.save();
 
         res.status(200).json({
             success:true,
             message:"order updated successfully",
-            data:data
+            data:normalizeOrder(data)
         });
     }
    catch(error){
@@ -130,5 +164,35 @@ const getAllOrders = async ( req , res )=>{
     }
 }
 
+const getOrderTracking = async ( req , res ) => {
+    try {
+        const trackingOrder = await order.findById(req.params.id);
+        if(!trackingOrder){
+            return res.status(404).json({
+                success:false,
+                message:"Order not found"
+            });
+        }
 
-module.exports = { createOrder, getUserOrders, getOrderById, updateOrderStatus, getAllOrders };
+        res.status(200).json({
+            success: true,
+            message: "Order tracking retrieved",
+            data: {
+                orderId: trackingOrder._id,
+                status: trackingOrder.status,
+                trackingNumber: trackingOrder.trackingNumber,
+                currentLocation: trackingOrder.currentLocation,
+                estimatedDelivery: trackingOrder.estimatedDelivery,
+                trackingHistory: trackingOrder.trackingHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+
+module.exports = { createOrder, getUserOrders, getOrderById, updateOrderStatus, getAllOrders, getOrderTracking };

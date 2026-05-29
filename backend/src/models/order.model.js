@@ -1,5 +1,12 @@
-
 const mongoose=require('mongoose');
+
+const trackingEventSchema = new mongoose.Schema({
+    event: { type: String, required: true },
+    status: { type: String, enum: ['pending', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'], required: true },
+    location: { type: String },
+    timestamp: { type: Date, default: Date.now },
+    description: { type: String }
+});
 
 const orderSchema = new mongoose.Schema({
     userId:{
@@ -27,7 +34,8 @@ const orderSchema = new mongoose.Schema({
     },
     paymentStatus:{
         type:String,
-        default: "pending" 
+        default: "pending",
+        enum: ['pending', 'paid', 'failed']
     },
     paymentId:{
         type:String,
@@ -35,7 +43,23 @@ const orderSchema = new mongoose.Schema({
     },
     status:{
         type:String,
-        default: "pending" 
+        default: "pending",
+        enum: ['pending', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled']
+    },
+    trackingNumber: {
+        type: String,
+        sparse: true
+    },
+    estimatedDelivery: {
+        type: Date
+    },
+    currentLocation: {
+        type: String,
+        default: "Warehouse"
+    },
+    trackingHistory: [trackingEventSchema],
+    notes: {
+        type: String
     }
 },{timestamps : true });
 

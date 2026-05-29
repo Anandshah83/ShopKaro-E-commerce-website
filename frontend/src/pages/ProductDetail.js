@@ -39,11 +39,15 @@ const ProductDetail = () => {
   const handleReview = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) return toast.error('Please login to review');
+    if (!reviewForm.comment) return toast.error('Please write a comment');
     setSubmitting(true);
     try {
-      await createReview(id, reviewForm);
-      const rv = await getReviews(id);
+      await createReview(id, { rating: reviewForm.rating, reviewComment: reviewForm.comment });
+      // Refetch both reviews and product to update rating & count
+      const [pr, rv] = await Promise.all([getProduct(id), getReviews(id)]);
+      const prod = pr.data?.data || pr.data?.product || pr.data;
       const revs = rv.data?.data || rv.data?.reviews || [];
+      setProduct(Array.isArray(prod) ? {} : prod);
       setReviews(Array.isArray(revs) ? revs : []);
       setReviewForm({ rating: 5, comment: '' });
       toast.success('Review submitted!');

@@ -64,8 +64,9 @@ export const deleteReview = (id) => API.delete(`/reviews/${id}`);
 export const createOrder = (data) => API.post('/orders', data);
 export const getMyOrders = () => API.get('/orders/my-orders');
 export const getOrder = (id) => API.get(`/orders/${id}`);
+export const getOrderTracking = (id) => API.get(`/orders/${id}/track`);
 export const getAllOrders = () => API.get('/orders/all');
-export const updateOrderStatus = (id, status) => API.put(`/orders/${id}/status`, { status });
+export const updateOrderStatus = (id, data) => API.put(`/orders/${id}/status`, data);
 
 // Payments
 export const createPaymentOrder = (data) => API.post('/payment/create-order', data);

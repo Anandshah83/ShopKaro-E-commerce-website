@@ -32,6 +32,14 @@ const Admin = () => {
   const [newCat, setNewCat] = useState('');
   const [savingProduct, setSavingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [orderUpdateForm, setOrderUpdateForm] = useState({
+    status: '',
+    trackingNumber: '',
+    currentLocation: '',
+    estimatedDelivery: '',
+    notes: '',
+  });
   const [productForm, setProductForm] = useState({
     name: '',
     price: '',
@@ -81,10 +89,34 @@ const Admin = () => {
     toast.success('Product deleted');
   };
 
-  const updateStatus = async (id, status) => {
-    await updateOrderStatus(id, status);
-    setOrders(o => o.map(x => x._id === id ? { ...x, status } : x));
-    toast.success('Status updated');
+  const openOrderUpdateForm = (order) => {
+    setEditingOrder(order);
+    setOrderUpdateForm({
+      status: order.status || 'pending',
+      trackingNumber: order.trackingNumber || '',
+      currentLocation: order.currentLocation || '',
+      estimatedDelivery: order.estimatedDelivery ? new Date(order.estimatedDelivery).toISOString().split('T')[0] : '',
+      notes: order.notes || '',
+    });
+  };
+
+  const saveOrderUpdate = async () => {
+    if (!editingOrder) return;
+    try {
+      const updatePayload = {
+        status: orderUpdateForm.status,
+        trackingNumber: orderUpdateForm.trackingNumber || undefined,
+        currentLocation: orderUpdateForm.currentLocation || undefined,
+        estimatedDelivery: orderUpdateForm.estimatedDelivery ? new Date(orderUpdateForm.estimatedDelivery) : undefined,
+        notes: orderUpdateForm.notes || undefined,
+      };
+      await updateOrderStatus(editingOrder._id, updatePayload);
+      setOrders(o => o.map(x => x._id === editingOrder._id ? { ...x, ...updatePayload } : x));
+      setEditingOrder(null);
+      toast.success('Order updated successfully');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update order');
+    }
   };
 
   const addCategory = async () => {
@@ -275,21 +307,59 @@ const Admin = () => {
         )}
 
         {activeTab === 'Orders' && (
-          <div style={styles.table}>
-            <div style={{ ...styles.tableRow, ...styles.tableHead, gridTemplateColumns: 'repeat(5, 1fr)' }}>
-              <span>Order ID</span><span>User</span><span>Amount</span><span>Status</span><span>Update</span>
-            </div>
-            {orders.map(o => (
-              <div key={o._id} style={{ ...styles.tableRow, gridTemplateColumns: 'repeat(5, 1fr)' }}>
-                <span style={styles.mono}>#{o._id?.slice(-6).toUpperCase()}</span>
-                <span style={styles.dim}>{o.user?.name || o.userId?.name || '-'}</span>
-                <span style={{ color: '#e8c547' }}>Rs {(o.totalAmount || o.totalAmounts || 0).toLocaleString('en-IN')}</span>
-                <span style={statusStyle(o.status)}>{o.status}</span>
-                <select style={styles.statusSelect} value={o.status} onChange={e => updateStatus(o._id, e.target.value)}>
-                  {['pending','processing','shipped','delivered','cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
+          <div>
+            {editingOrder && (
+              <div style={styles.modal}>
+                <div style={styles.modalContent}>
+                  <h3 style={styles.modalTitle}>Update Order #{editingOrder._id?.slice(-8).toUpperCase()}</h3>
+                  <div style={styles.formGrid}>
+                    <div>
+                      <label style={styles.label}>Status</label>
+                      <select style={styles.formInput} value={orderUpdateForm.status} onChange={e => setOrderUpdateForm(f => ({ ...f, status: e.target.value }))}>
+                        {['pending', 'processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'].map(s => (
+                          <option key={s} value={s}>{s.replace(/_/g, ' ').toUpperCase()}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={styles.label}>Tracking Number</label>
+                      <input style={styles.formInput} placeholder="e.g., TRK123456789" value={orderUpdateForm.trackingNumber} onChange={e => setOrderUpdateForm(f => ({ ...f, trackingNumber: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label style={styles.label}>Current Location</label>
+                      <input style={styles.formInput} placeholder="e.g., Delhi Warehouse" value={orderUpdateForm.currentLocation} onChange={e => setOrderUpdateForm(f => ({ ...f, currentLocation: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label style={styles.label}>Est. Delivery Date</label>
+                      <input style={styles.formInput} type="date" value={orderUpdateForm.estimatedDelivery} onChange={e => setOrderUpdateForm(f => ({ ...f, estimatedDelivery: e.target.value }))} />
+                    </div>
+                  </div>
+                  <div>
+                    <label style={styles.label}>Notes</label>
+                    <textarea style={{ ...styles.formInput, minHeight: 80, gridColumn: '1 / -1' }} placeholder="Add tracking notes..." value={orderUpdateForm.notes} onChange={e => setOrderUpdateForm(f => ({ ...f, notes: e.target.value }))} />
+                  </div>
+                  <div style={styles.modalActions}>
+                    <button style={styles.catBtn} onClick={saveOrderUpdate}>Save Update</button>
+                    <button style={styles.cancelEditBtn} onClick={() => setEditingOrder(null)}>Cancel</button>
+                  </div>
+                </div>
               </div>
-            ))}
+            )}
+            
+            <div style={styles.table}>
+              <div style={{ ...styles.tableRow, ...styles.tableHead, gridTemplateColumns: '1fr 1.2fr 1fr 1.2fr 0.8fr' }}>
+                <span>Order ID</span><span>User</span><span>Amount</span><span>Status</span><span>Action</span>
+              </div>
+              {orders.map(o => (
+                <div key={o._id} style={{ ...styles.tableRow, gridTemplateColumns: '1fr 1.2fr 1fr 1.2fr 0.8fr' }}>
+                  <span style={styles.mono}>#{o._id?.slice(-8).toUpperCase()}</span>
+                  <span style={styles.dim}>{o.user?.name || o.userId?.name || '-'}</span>
+                  <span style={{ color: '#e8c547' }}>₹{(o.totalAmount || o.totalAmounts || 0).toLocaleString('en-IN')}</span>
+                  <span style={statusStyle(o.status)}>{o.status?.replace(/_/g, ' ').toUpperCase()}</span>
+                  <button style={styles.editBtn} onClick={() => openOrderUpdateForm(o)}>Track</button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -411,6 +481,35 @@ const styles = {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
     padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)',
     color: '#f0ece6', fontFamily: 'DM Sans, sans-serif',
+  },
+  modal: {
+    position: 'fixed', inset: 0,
+    background: 'rgba(0,0,0,0.7)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    zIndex: 1000, padding: '20px',
+  },
+  modalContent: {
+    background: '#13131a',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 12, padding: '30px',
+    maxWidth: 600, width: '100%',
+    maxHeight: '90vh', overflowY: 'auto',
+  },
+  modalTitle: {
+    fontFamily: 'Syne, sans-serif', fontSize: 20, fontWeight: 700,
+    color: '#f0ece6', marginBottom: 24,
+  },
+  formGrid: {
+    display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: 16, marginBottom: 16,
+  },
+  label: {
+    display: 'block', fontFamily: 'Syne, sans-serif',
+    fontSize: 12, fontWeight: 700, color: 'rgba(240,236,230,0.7)',
+    marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5,
+  },
+  modalActions: {
+    display: 'flex', gap: 12, marginTop: 24,
   },
 };
 
