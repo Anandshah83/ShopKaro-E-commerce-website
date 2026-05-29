@@ -85,9 +85,9 @@ const styles = {
     background: 'radial-gradient(ellipse at 50% 0%, rgba(232,197,71,0.08) 0%, transparent 60%)',
   },
   card: {
-    width: '100%', maxWidth: 420,
+    width: '95%', maxWidth: 420,
     background: '#13131a', border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: 20, padding: '44px 40px',
+    borderRadius: 20, padding: 'clamp(24px, 5vw, 44px) clamp(20px, 5vw, 40px)',
   },
   logo: { fontFamily: 'Syne, sans-serif', fontSize: 22, fontWeight: 800, color: '#f0ece6', marginBottom: 24, textAlign: 'center' },
   title: { fontFamily: 'Syne, sans-serif', fontSize: 28, fontWeight: 800, color: '#f0ece6', marginBottom: 8, textAlign: 'center' },

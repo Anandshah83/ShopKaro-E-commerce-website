@@ -214,6 +214,12 @@ const Admin = () => {
 
   return (
     <div style={styles.page}>
+      <style>{`
+        .admin-table-container {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+      `}</style>
       <div style={styles.container}>
         <h1 style={styles.title}>Admin Panel</h1>
 
@@ -234,7 +240,7 @@ const Admin = () => {
               ))}
             </div>
             <div style={styles.recentTitle}>Recent Orders</div>
-            <div style={styles.table}>
+            <div style={styles.table} className="admin-table-container">
               <div style={{ ...styles.tableRow, ...styles.tableHead }}>
                 <span>Order ID</span><span>User</span><span>Amount</span><span>Status</span>
               </div>
@@ -270,7 +276,7 @@ const Admin = () => {
               </div>
             </form>
 
-            <div style={styles.table}>
+            <div style={styles.table} className="admin-table-container">
               <div style={{ ...styles.tableRow, ...styles.tableHead, gridTemplateColumns: 'repeat(4, 1fr) 150px' }}>
                 <span>Name</span><span>Price</span><span>Qty</span><span>Rating</span><span>Action</span>
               </div>
@@ -291,7 +297,7 @@ const Admin = () => {
         )}
 
         {activeTab === 'Users' && (
-          <div style={styles.table}>
+          <div style={styles.table} className="admin-table-container">
             <div style={{ ...styles.tableRow, ...styles.tableHead }}>
               <span>Name</span><span>Email</span><span>Role</span><span>Action</span>
             </div>
@@ -346,7 +352,7 @@ const Admin = () => {
               </div>
             )}
             
-            <div style={styles.table}>
+            <div style={styles.table} className="admin-table-container">
               <div style={{ ...styles.tableRow, ...styles.tableHead, gridTemplateColumns: '1fr 1.2fr 1fr 1.2fr 0.8fr' }}>
                 <span>Order ID</span><span>User</span><span>Amount</span><span>Status</span><span>Action</span>
               </div>
@@ -369,7 +375,7 @@ const Admin = () => {
               <input style={styles.catInput} placeholder="New category name..." value={newCat} onChange={e => setNewCat(e.target.value)} onKeyDown={e => e.key === 'Enter' && addCategory()} />
               <button style={styles.catBtn} onClick={addCategory}>Add Category</button>
             </div>
-            <div style={styles.catList}>
+            <div style={styles.catList} className="admin-table-container">
               {categories.map(c => (
                 <div key={c._id} style={styles.catRow}>
                   <span>{c.name}</span>

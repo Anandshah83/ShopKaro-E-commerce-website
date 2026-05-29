@@ -26,6 +26,21 @@ const ProductCard = ({ product }) => {
 
   return (
     <Link to={`/products/${product._id}`} style={styles.card}>
+      <style>{`
+        @media (max-width: 480px) {
+          .card-footer {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+            text-align: center;
+          }
+          .card-add-btn {
+            width: 100% !important;
+            padding: 10px !important;
+            font-size: 12px !important;
+          }
+        }
+      `}</style>
       <div style={styles.imgWrap}>
         <img src={imgUrl} alt={product.name} style={styles.img} onError={(e) => {
           if (e.target.src !== placeholderImg) e.target.src = placeholderImg;
@@ -35,12 +50,13 @@ const ProductCard = ({ product }) => {
       </div>
       <div style={styles.body}>
         <div style={styles.category}>{product.category?.name || 'Uncategorized'}</div>
-        <h3 style={styles.name}>{product.name}</h3>
-        <p style={styles.desc}>{product.description?.slice(0, 70)}...</p>
-        <div style={styles.footer}>
+        <h3 style={styles.name} className="product-title">{product.name}</h3>
+        <p style={styles.desc} className="product-desc">{product.description?.slice(0, 70)}...</p>
+        <div style={styles.footer} className="card-footer">
           <span style={styles.price}>₹{product.price?.toLocaleString('en-IN')}</span>
           <button
             style={{ ...styles.addBtn, ...(stock === 0 ? styles.disabledBtn : {}) }}
+            className="card-add-btn"
             onClick={handleAdd}
             disabled={stock === 0}
           >
@@ -65,12 +81,14 @@ const styles = {
     borderRadius: 16,
     overflow: 'hidden',
     textDecoration: 'none',
+    width: '100%',
     color: '#f0ece6',
     display: 'flex', flexDirection: 'column',
     transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
     cursor: 'pointer',
+    height: '100%',
   },
-  imgWrap: { position: 'relative', aspectRatio: '4/3', overflow: 'hidden' },
+  imgWrap: { position: 'relative', aspectRatio: '1/1', overflow: 'hidden' },
   img: { width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' },
   imgOverlay: {
     position: 'absolute', inset: 0,
@@ -82,19 +100,19 @@ const styles = {
     padding: '4px 10px', borderRadius: 20,
     fontSize: 11, fontWeight: 700, fontFamily: 'Syne, sans-serif',
   },
-  body: { padding: '18px 20px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8 },
+  body: { padding: 'clamp(10px, 3vw, 18px) clamp(10px, 3vw, 20px)', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 },
   category: {
-    fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
+    fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
     color: '#e8c547', textTransform: 'uppercase',
     fontFamily: 'Syne, sans-serif',
   },
   name: {
     fontFamily: 'Syne, sans-serif',
-    fontSize: 18, fontWeight: 700,
+    fontSize: 'clamp(14px, 3vw, 18px)', fontWeight: 700,
     lineHeight: 1.3, color: '#f0ece6',
   },
   desc: {
-    fontSize: 13, color: 'rgba(240,236,230,0.5)',
+    fontSize: 12, color: 'rgba(240,236,230,0.5)',
     lineHeight: 1.6, flex: 1,
   },
   footer: {
@@ -103,7 +121,7 @@ const styles = {
   },
   price: {
     fontFamily: 'Syne, sans-serif',
-    fontSize: 22, fontWeight: 800,
+    fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: 800,
     color: '#e8c547',
   },
   addBtn: {

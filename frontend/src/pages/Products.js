@@ -53,6 +53,14 @@ const Products = () => {
 
   return (
     <div style={styles.page}>
+      <style>{`
+        @media (max-width: 600px) {
+          .responsive-product-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 8px !important;
+          }
+        }
+      `}</style>
       <div style={styles.container}>
         <h1 style={styles.title}>All Products</h1>
 
@@ -93,7 +101,7 @@ const Products = () => {
             <p style={styles.emptyText}>No products found. Try adjusting your filters.</p>
           </div>
         ) : !error && (
-          <div style={styles.grid}>
+          <div style={{ ...styles.grid }} className="responsive-product-grid">
             {products.map(p => <ProductCard key={p._id} product={p} />)}
           </div>
         )}
@@ -149,8 +157,9 @@ const styles = {
   count: { color: 'rgba(240,236,230,0.4)', fontSize: 'clamp(11px, 2vw, 13px)', marginBottom: 'clamp(12px, 3vw, 20px)' },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 30vw, 260px), 1fr))',
-    gap: 'clamp(12px, 3vw, 24px)',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(160px, 20vw, 280px), 1fr))',
+    gap: 'clamp(8px, 2vw, 24px)',
+    justifyContent: 'center',
   },
   empty: { textAlign: 'center', padding: 'clamp(40px, 10vw, 80px) 12px' },
   emptyText: { color: 'rgba(240,236,230,0.4)', fontSize: 'clamp(13px, 2vw, 16px)' },

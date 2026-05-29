@@ -44,6 +44,14 @@ const Home = () => {
 
   return (
     <div>
+      <style>{`
+        @media (max-width: 600px) {
+          .responsive-home-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 8px !important;
+          }
+        }
+      `}</style>
       {/* Hero */}
       <section style={styles.hero}>
         <div style={styles.heroBg} />
@@ -102,7 +110,7 @@ const Home = () => {
             <Link to="/products" style={styles.seeAll}>View All →</Link>
           </div>
           {loading ? <Loader /> : (
-            <div style={styles.productGrid}>
+            <div style={styles.productGrid} className="responsive-home-grid">
               {products.slice(0, 8).map(p => (
                 <ProductCard key={p._id} product={p} />
               ))}
@@ -269,8 +277,9 @@ const styles = {
   },
   productGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 40vw, 260px), 1fr))',
-    gap: 'clamp(12px, 3vw, 24px)',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(160px, 20vw, 280px), 1fr))',
+    gap: 'clamp(8px, 2vw, 24px)',
+    justifyContent: 'center',
   },
   cta: {
     background: 'linear-gradient(135deg, rgba(232,197,71,0.12) 0%, rgba(100,80,200,0.08) 100%)',

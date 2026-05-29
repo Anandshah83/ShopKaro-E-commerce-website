@@ -142,6 +142,12 @@ const Cart = () => {
           from { transform: translateY(20px); opacity: 0; }
           to { transform: translateY(0); opacity: 1; }
         }
+        @media (max-width: 992px) {
+          .cart-layout {
+            grid-template-columns: 1fr !important;
+          }
+          .cart-summary { position: static !important; }
+        }
       `}</style>
       
       {/* Payment Method Modal */}
@@ -191,7 +197,7 @@ const Cart = () => {
       <div style={styles.container}>
         <h1 style={styles.title}>Shopping Cart <span style={styles.count}>({count} items)</span></h1>
 
-        <div style={styles.layout}>
+        <div style={styles.layout} className="cart-layout">
           {/* Items */}
           <div style={styles.items}>
             {cart.map(item => {
@@ -219,7 +225,7 @@ const Cart = () => {
           </div>
 
           {/* Summary */}
-          <div style={styles.summary}>
+          <div style={styles.summary} className="cart-summary">
             <h2 style={styles.summaryTitle}>Order Summary</h2>
             <div style={styles.summaryRow}>
               <span style={styles.summaryLabel}>Subtotal ({count} items)</span>
@@ -273,16 +279,16 @@ const Cart = () => {
 };
 
 const styles = {
-  page: { padding: '60px 24px', minHeight: '80vh' },
+  page: { padding: 'clamp(20px, 5vw, 60px) clamp(12px, 3vw, 24px)', minHeight: '80vh' },
   container: { maxWidth: 1200, margin: '0 auto' },
-  title: { fontFamily: 'Syne, sans-serif', fontSize: 36, fontWeight: 800, color: '#f0ece6', marginBottom: 36 },
-  count: { color: 'rgba(240,236,230,0.4)', fontSize: 22 },
+  title: { fontFamily: 'Syne, sans-serif', fontSize: 'clamp(24px, 5vw, 36px)', fontWeight: 800, color: '#f0ece6', marginBottom: 'clamp(20px, 5vw, 36px)' },
+  count: { color: 'rgba(240,236,230,0.4)', fontSize: 'clamp(16px, 3vw, 22px)' },
   layout: { display: 'grid', gridTemplateColumns: '1fr 360px', gap: 32, alignItems: 'start' },
   items: { display: 'flex', flexDirection: 'column', gap: 16 },
   item: {
     background: '#13131a', border: '1px solid rgba(255,255,255,0.07)',
     borderRadius: 14, padding: '20px 24px',
-    display: 'flex', alignItems: 'center', gap: 20,
+    display: 'flex', alignItems: 'center', gap: 'clamp(12px, 3vw, 20px)', flexWrap: 'wrap',
   },
   itemImg: { width: 90, height: 70, objectFit: 'cover', borderRadius: 10, flexShrink: 0 },
   itemInfo: { flex: 1 },
